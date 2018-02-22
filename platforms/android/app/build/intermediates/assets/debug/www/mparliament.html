@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css">
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0;" />
+<script type="text/javascript" charset="utf-8" src="appframework/appframework.ui.min.js"></script>
+<link rel="stylesheet" type="text/css" href="appframework/af.ui.css" />
+<link rel="stylesheet" type="text/css" href="appframework/icons.css" />
+<link rel="stylesheet" href="jquery-mobile.css">
+<script src="jquery-mobile.js"></script>
+</head>
+<script type="text/javascript">
+  function onSuccess(data, status)
+            {
+          //  resetcrimeTextField();
+            $("#crimenoted").fadeIn(2000);
+            data = $.trim(data);
+            if(data=="SUCCESS")
+            {
+			$("#crimenoted").css("background-color", "#ffff00");
+            $("#crimenoted").text("Saved Succesfully");
+			var url = 'index.html';
+            $(location).attr('href',url);
+             }
+            else
+            {
+            $("#crimenoted").css("background-color", "#ff0000");
+            $("#crimenoted").text(data);
+            }
+            $("#crimenoted").fadeOut(5000);
+            }
+ $(document).ready(function() {
+            $("#submit").click(function(){
+		//	var pollingno = document.getElementById("pollingno").value;
+			var formData = $("#crimePost").serialize();
+	         $.ajax({
+            type: "POST",
+			url: "http://www.ongwaesecretariat.co.ke/myscript/mparliament.php",
+            cache: false,
+            data: formData,
+            success: onSuccess
+            });
+            return false;
+            });
+			
+			  });
+			  
+			</script>
+
+<body> 
+<a href="index.html" target="_parent" class="ui-btn ui-shadow ui-corner-all" data-uib="jquery_mobile/button" data-ver="0" data-role="button">MEMBER OF PARLIAMENT RESULTS</p></a>
+<div id="listDiv">
+<div id="nccheckListPage" data-role="page" data-add-back-btn="true" >
+<form id="crimePost" data-ajax ="false" method="post">
+<div data-role="content" class="scrollable"></div>
+<ul id="nccheckList" data-role="listview"  data-autodividers="true"></ul>
+<input type="submit" value="Save" id="submit">
+<h3 id="crimenoted"></h3>
+</form>
+</div>
+</div>
+ <style>
+.hideClass
+{display:none;}
+#listDiv {
+    position: absolute;
+    top: 0px;
+    left:0px;
+    right: 0px;
+    bottom: 0px;
+    margin-top: 48px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+</style>
+<script type="text/javascript">
+function ScaleContentToDevice() {
+    scroll(0, 0);
+    var viewportHeight = $(window).height();
+    var content = $("#contDiv");
+    var contentMargins = content.outerHeight() - content.height();
+    var contentheight = viewportHeight - contentMargins;
+    content.height(contentheight);
+};
+
+$(document).on("pageshow", function () {
+    ScaleContentToDevice();
+});
+$(window).on('resize orientationchange', function () {
+    ScaleContentToDevice()
+}); 
+</script>
+<script src="js/jquery.js"></script>
+<script src="js/jquery.mobile-1.0rc1.min.js"></script>
+<script src="js/mparliament.js"></script>
+</body>
+</html>

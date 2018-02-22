@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css">
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0;" />
+<script type="text/javascript" charset="utf-8" src="appframework/appframework.ui.min.js"></script>
+<link rel="stylesheet" type="text/css" href="appframework/af.ui.css" />
+<link rel="stylesheet" type="text/css" href="appframework/icons.css" />
+<link rel="stylesheet" href="jquery-mobile.css">
+<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+<script src="jquery-mobile.js"></script>
+<link rel="stylesheet" type="text/css" href="css/index.css" />
+</head>
+<script>
+$.urlParam = function(name, url) {
+    if (!url) {
+     url = window.location.href;
+    }
+    var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
+    if (!results) { 
+        return undefined;
+    }
+    return results[1] || undefined;
+}
+</script>
+<script type="text/javascript">
+function onSuccess(data, status)
+{
+//  resetcrimeTextField();
+$("#crimenoted").fadeIn(2000);
+data = $.trim(data);
+if(data=="SUCCESS")
+{
+$("#crimenoted").css("background-color", "#ffff00");
+$("#crimenoted").text("Saved Succesfully");
+var url = 'index.html';
+$(location).attr('href',url);
+}
+else
+{
+$("#crimenoted").css("background-color", "#ff0000");
+$("#crimenoted").text(data);
+}
+$("#crimenoted").fadeOut(5000);
+}
+$(document).ready(function() {
+$("#submit").click(function(){
+var mikenew=$('#mikenew').html();
+var logeduser = $.urlParam('myuser');
+var mward = $.urlParam('wardw');
+var options = new FileUploadOptions();
+options.fileKey = "file";
+options.fileName = mikenew.substr(mikenew.lastIndexOf('/') + 1);
+options.mimeType = "image/jpeg";
+var params = new Object();
+params.value1 = "test";
+params.value2 = "param";
+options.params = params;
+options.chunkedMode = false;
+var ft = new FileTransfer();
+var formData = $("#crimePost").serialize();
+ft.upload(mikenew, encodeURI("https://www.peleceer.co.ke/etransmission/nominations.php"),win,fail,options,true);
+$.ajax({
+type: "POST",
+url: "https://www.peleceer.co.ke/etransmission/nominations.php?appuser="+logeduser+'&wardw='+mward,
+cache: false,
+data: formData,
+success: onSuccess
+});
+return false;  	   
+  });    
+ });
+var pictureSource;   // picture source
+var destinationType; // sets the format of returned value
+// Wait for device API libraries to load
+//
+document.addEventListener("deviceready",onDeviceReady,false);
+/// device APIs are available
+//
+function onDeviceReady() {
+	pictureSource=navigator.camera.PictureSourceType;
+	destinationType=navigator.camera.DestinationType;
+}
+ function clearCache() {
+    navigator.camera.cleanup();
+}
+
+var retries = 0;
+function sendPhoto(fileURI) {
+      //***optional part in case you want to see the image on the screen
+      document.getElementById('largeImage').innerHTML=fileURI;
+      var largeImage = document.getElementById('largeImage');
+      // Unhide image elements
+      //
+	  largeImage.style.display = 'block';
+	  largeImage.src = fileURI;
+	 document.getElementById('mikenew').innerHTML=fileURI;
+     var mikenew = document.getElementById('mikenew');
+      largeImage.src = fileURI;
+	  mikenew.src = fileURI;
+
+}
+    function onPhotoDataSuccess(imageURI) {
+      var smallImage = document.getElementById('smallImage');
+	  var imageUri= document.getElementById('imageUri');
+      smallImage.style.display = 'block';
+	  imageUri.style.display = 'block';
+	 smallImage.src = imageURI;
+	 imageUri=imageURI;
+    }
+    function onPhotoURISuccess(imageURI) {
+      var largeImage = document.getElementById('largeImage');
+      largeImage.style.display = 'block';
+      largeImage.src = imageURI;
+    }
+    function capturePhoto() {
+		navigator.camera.getPicture(sendPhoto, onFail, { quality: 50,
+        destinationType: destinationType.FILE_URI });
+    }
+
+    // A button will call this function
+    //
+    function capturePhotoEdit() {
+      // Take picture using device camera, allow edit, and retrieve image as base64-encoded string
+      navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 20, allowEdit: true,
+        destinationType: destinationType.DATA_URL });
+    }
+
+    // A button will call this function
+    //
+    function getPhoto(source) {
+		 navigator.camera.getPicture(sendPhoto, onFail, { quality: 50,
+        destinationType: destinationType.FILE_URI,
+        sourceType: source });
+    }
+
+   function onFail(message) {
+      alert('Failed because: ' + message);
+    }
+
+var options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0
+};
+function win(r) {
+    console.log("Code = " + r.responseCode);
+    console.log("Response = " + r.response);
+    console.log("Sent = " + r.bytesSent);
+}
+
+function fail(error) {
+    alert("An error has occurred: Code = " + error.code);
+    console.log("upload error source " + error.source);
+    console.log("upload error target " + error.target);
+}
+</script>
+
+<body> 
+<a href="index.html" target="_parent" class="ui-btn ui-shadow ui-corner-all" data-uib="jquery_mobile/button" data-ver="0" data-role="button">CLEARANCE PROCESS</p></a>
+<div id="listDiv">
+<div id="nccheckListPage" data-role="page" data-add-back-btn="true" >
+<button onClick="capturePhoto();">Capture Photo</button>
+<button onClick="getPhoto(pictureSource.PHOTOLIBRARY);">Upload Picture</button>
+
+<form id="crimePost" data-ajax ="false" method="post">
+<div data-role="content" class="scrollable"></div>
+<ul id="nccheckList" data-role="listview"  data-autodividers="true"></ul>
+<input type="submit" value="Save" id="submit">
+<div id="mikenew"  style="visibility:hidden"  >
+ 
+</div>
+<h3 id="crimenoted"></h3>
+</form>
+<img style="display:none;width:100px;height:100px;"  id="largeImage" src="" />
+
+</div>
+</div>
+ <style>
+.hideClass
+{display:none;}
+#listDiv {
+    position: absolute;
+    top: 0px;
+    left:0px;
+    right: 0px;
+    bottom: 0px;
+    margin-top: 48px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+	background-image:url(img/back.png);
+}
+</style>
+<script src="js/jquery.js"></script>
+<script src="js/jquery.mobile-1.0rc1.min.js"></script>
+<script src="js/mparliament.js"></script>
+<script type="text/javascript">
+function ScaleContentToDevice() {
+    scroll(0, 0);
+    var viewportHeight = $(window).height();
+    var content = $("#contDiv");
+    var contentMargins = content.outerHeight() - content.height();
+    var contentheight = viewportHeight - contentMargins;
+    content.height(contentheight);
+};
+
+$(document).on("pageshow", function () {
+    ScaleContentToDevice();
+});
+$(window).on('resize orientationchange', function () {
+    ScaleContentToDevice()
+}); 
+</script>
+</body>
+</html>
